@@ -1,308 +1,127 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRestroom } from "@fortawesome/free-solid-svg-icons";
 import RestroomModal from "../../modal/modal-restroom/page.js";
-
-const cityOptions = [
-  "강원",
-  "경기",
-  "경남",
-  "경북",
-  "광주",
-  "대구",
-  "대전",
-  "부산",
-  "서울",
-  "세종",
-  "울산",
-  "인천",
-  "전남",
-  "전북",
-  "제주",
-  "충남",
-  "충북",
-];
+import CityMap from "../../components/CityMap.js";
+import { getDistrictsByCity } from "../../components/DistrictData.js";
+import RestroomFiles from "../../components/RestroomFiles.js";
+import CitySelector from "../../components/CitySelector.js";
+import DistrictSelector from "../../components/DistrictSelector.js";
+import SearchInput from "../../components/SearchInput.js";
 
 const RestroomSearchSection = () => {
   const [showModal, setShowModal] = useState(false);
-  const [selectedRestroom, setSelectedRestroom] = useState(null);
   const [selectedCity, setSelectedCity] = useState("");
   const [districtOptions, setDistrictOptions] = useState([]);
   const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [restrooms, setRestrooms] = useState([]);
+  const [isCitySelectOpen, setIsCitySelectOpen] = useState(false);
+  const [isDistrictSelectOpen, setIsDistrictSelectOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [filteredRestrooms, setFilteredRestrooms] = useState([]);
 
-  // 시군구 데이터 가져오기
-  const getDistrictsByCity = (city) => {
-    const districtData = {
-      서울: [
-        "종로구",
-        "중구",
-        "용산구",
-        "성동구",
-        "광진구",
-        "동대문구",
-        "중랑구",
-        "성북구",
-        "강북구",
-        "도봉구",
-        "노원구",
-        "은평구",
-        "서대문구",
-        "마포구",
-        "양천구",
-        "강서구",
-        "구로구",
-        "금천구",
-        "영등포구",
-        "동작구",
-        "관악구",
-        "서초구",
-        "강남구",
-        "송파구",
-        "강동구",
-      ],
-      대구: [
-        "중구",
-        "동구",
-        "서구",
-        "남구",
-        "북구",
-        "수성구",
-        "달서구",
-        "달성군",
-      ],
-      부산: [
-        "중구",
-        "서구",
-        "동구",
-        "영도구",
-        "부산진구",
-        "동래구",
-        "남구",
-        "북구",
-        "해운대구",
-        "사하구",
-        "금정구",
-        "강서구",
-        "연제구",
-        "수영구",
-        "사상구",
-        "기장군",
-      ],
-      대전: ["동구", "중구", "서구", "유성구", "대덕구"],
-      광주: ["동구", "서구", "남구", "북구", "광산구"],
-      인천: [
-        "중구",
-        "동구",
-        "미추홀구",
-        "연수구",
-        "남동구",
-        "부평구",
-        "계양구",
-        "서구",
-        "강화군",
-        "옹진군",
-      ],
-      강원: [
-        "춘천시",
-        "원주시",
-        "강릉시",
-        "동해시",
-        "태백시",
-        "속초시",
-        "삼척시",
-        "홍천군",
-        "횡성군",
-        "영월군",
-        "평창군",
-        "정선군",
-        "철원군",
-        "화천군",
-        "양구군",
-        "인제군",
-        "고성군",
-        "양양군",
-      ],
-      경기: [
-        "수원시",
-        "고양시",
-        "용인시",
-        "성남시",
-        "부천시",
-        "안산시",
-        "화성시",
-        "남양주시",
-        "평택시",
-        "의정부시",
-        "파주시",
-        "시흥시",
-        "김포시",
-        "광명시",
-        "군포시",
-        "광주시",
-        "이천시",
-        "양주시",
-        "오산시",
-        "구리시",
-        "안성시",
-        "포천시",
-        "의왕시",
-        "하남시",
-        "여주시",
-        "양평군",
-        "동두천시",
-        "과천시",
-        "연천군",
-        "가평군",
-      ],
-      경남: [
-        "창원시",
-        "김해시",
-        "진주시",
-        "양산시",
-        "거제시",
-        "통영시",
-        "사천시",
-        "밀양시",
-        "거창군",
-        "함안군",
-        "창녕군",
-        "고성군",
-        "하동군",
-        "합천군",
-        "함양군",
-        "산청군",
-        "의령군",
-        "남해군",
-      ],
-      경북: [
-        "포항시",
-        "구미시",
-        "경주시",
-        "경산시",
-        "안동시",
-        "김천시",
-        "영주시",
-        "상주시",
-        "문경시",
-        "영천시",
-        "의성군",
-        "고령군",
-        "성주군",
-        "칠곡군",
-        "청도군",
-        "청송군",
-        "영양군",
-        "예천군",
-        "봉화군",
-        "울진군",
-        "울릉군",
-      ],
-      세종: ["세종시"],
-      울산: ["중구", "남구", "동구", "북구", "울주군"],
-      전남: [
-        "목포시",
-        "여수시",
-        "순천시",
-        "나주시",
-        "광양시",
-        "담양군",
-        "곡성군",
-        "구례군",
-        "고흥군",
-        "보성군",
-        "화순군",
-        "장흥군",
-        "강진군",
-        "해남군",
-        "영암군",
-        "무안군",
-        "함평군",
-        "영광군",
-        "장성군",
-        "완도군",
-        "진도군",
-        "신안군",
-      ],
-      전북: [
-        "전주시",
-        "군산시",
-        "익산시",
-        "정읍시",
-        "남원시",
-        "김제시",
-        "완주군",
-        "진안군",
-        "무주군",
-        "장수군",
-        "임실군",
-        "순창군",
-        "고창군",
-        "부안군",
-      ],
-      제주: ["제주시", "서귀포시"],
-      충남: [
-        "천안시",
-        "공주시",
-        "보령시",
-        "아산시",
-        "서산시",
-        "논산시",
-        "계룡시",
-        "당진시",
-        "금산군",
-        "부여군",
-        "서천군",
-        "청양군",
-        "홍성군",
-        "예산군",
-        "태안군",
-      ],
-      충북: [
-        "청주시",
-        "충주시",
-        "제천시",
-        "보은군",
-        "옥천군",
-        "영동군",
-        "증평군",
-        "진천군",
-        "괴산군",
-        "음성군",
-        "단양군",
-      ],
-    };
-    return districtData[city] || [];
+  useEffect(() => {
+    fetchRestroomData();
+  }, []);
+
+  const fetchRestroomData = async () => {
+    try {
+      const promises = RestroomFiles.map((file) =>
+        fetch(`/json/${file}`).then((res) => res.json())
+      );
+      const results = await Promise.all(promises);
+      const mergedData = results.flat();
+      setRestrooms(mergedData);
+    } catch (error) {
+      console.error("JSON 데이터를 불러오는데 실패하였습니다.", error);
+    }
   };
 
   const handleCitySelect = (city) => {
     setSelectedCity(city);
     const districts = getDistrictsByCity(city);
     setDistrictOptions(districts);
-    setSelectedDistrict(""); // 시군구 초기화
+    setSelectedDistrict("");
+    setIsCitySelectOpen(false);
   };
 
   const handleDistrictSelect = (district) => {
     setSelectedDistrict(district);
-    document.getElementById("restroomDistrictSelect").value = district;
+    setIsDistrictSelectOpen(false);
   };
 
   const handleSearch = () => {
-    // 검색 로직 구현
-    // JSON 데이터가 로드된 상태에서 검색 조건 (searchQuery, selectedCity, selectedDistrict)을 이용해 데이터를 필터링합니다.
-    const filteredData = someRestroomData.filter(
-      (restroom) =>
-        restroom.화장실명.includes(searchQuery) &&
-        restroom.소재지지번주소.includes(selectedDistrict)
-    );
-    setSelectedRestroom(filteredData.length > 0 ? filteredData[0] : null);
-    setShowModal(true);
+    const filtered = restrooms.filter((restroom) => {
+      const roadAddress = restroom.소재지도로명주소 || "";
+      const parcelAddress = restroom.소재지지번주소 || "";
+
+      const roadAddressParts = roadAddress.split(" ");
+      const parcelAddressParts = parcelAddress.split(" ");
+
+      const fullCityName = CityMap[selectedCity] || selectedCity;
+
+      const cityMatch =
+        roadAddressParts[0].includes(selectedCity) ||
+        roadAddressParts[0].includes(fullCityName) ||
+        parcelAddressParts[0].includes(selectedCity) ||
+        parcelAddressParts[0].includes(fullCityName);
+
+      const districtMatch =
+        (roadAddressParts[1] &&
+          roadAddressParts[1].includes(selectedDistrict)) ||
+        (parcelAddressParts[1] &&
+          parcelAddressParts[1].includes(selectedDistrict));
+
+      return cityMatch && districtMatch;
+    });
+
+    if (filtered.length > 0) {
+      setFilteredRestrooms(filtered);
+      setShowModal(true);
+    } else {
+      alert("해당 지역에 화장실이 없습니다.");
+    }
+  };
+
+  const handleInputSearch = () => {
+    const filtered = restrooms.filter((restroom) => {
+      const roadAddress = restroom.소재지도로명주소 || "";
+      const parcelAddress = restroom.소재지지번주소 || "";
+      const restroomName = restroom.화장실명 || "";
+
+      return (
+        roadAddress.includes(searchQuery) ||
+        parcelAddress.includes(searchQuery) ||
+        restroomName.includes(searchQuery)
+      );
+    });
+
+    if (filtered.length > 0) {
+      setFilteredRestrooms(filtered);
+      setShowModal(true);
+    } else {
+      alert("검색 결과가 없습니다.");
+    }
+  };
+
+  const toggleCitySelect = () => {
+    setIsCitySelectOpen(!isCitySelectOpen);
+    setIsDistrictSelectOpen(false);
+  };
+
+  const toggleDistrictSelect = () => {
+    setIsDistrictSelectOpen(!isDistrictSelectOpen);
+    setIsCitySelectOpen(false);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
   };
 
   return (
     <div className="background restroom">
-      <div className="overlay"></div>
+      <div className="overlay" onClick={closeModal}></div>
       <section className="search restroom">
         <h2>
           <FontAwesomeIcon icon={faRestroom} className="default-icon" />{" "}
@@ -310,102 +129,34 @@ const RestroomSearchSection = () => {
         </h2>
         <h6>공중화장실 검색</h6>
 
-        <div className="custom-select-wrapper">
-          <div className="custom-select">
-            <div
-              className="custom-select-trigger"
-              onClick={() => {
-                document.getElementById("restroomCitySelect").focus();
-              }}
-            >
-              <span>{selectedCity || "도시 선택"}</span>
-              <div className="arrow"></div>
-            </div>
-            <div className="custom-options">
-              {cityOptions.map((city) => (
-                <span
-                  key={city}
-                  className="custom-option"
-                  onClick={() => handleCitySelect(city)}
-                >
-                  {city}
-                </span>
-              ))}
-            </div>
-          </div>
-          <select
-            id="restroomCitySelect"
-            style={{ display: "none" }}
-            value={selectedCity}
-            onChange={(e) => handleCitySelect(e.target.value)}
-          >
-            <option value="">도시 선택</option>
-            {cityOptions.map((city) => (
-              <option key={city} value={city}>
-                {city}
-              </option>
-            ))}
-          </select>
-        </div>
+        <CitySelector
+          selectedCity={selectedCity}
+          isCitySelectOpen={isCitySelectOpen}
+          toggleCitySelect={toggleCitySelect}
+          handleCitySelect={handleCitySelect}
+        />
 
-        <div className="custom-select-wrapper">
-          <div className="custom-select">
-            <div
-              className="custom-select-trigger"
-              onClick={() => {
-                document.getElementById("restroomDistrictSelect").focus();
-              }}
-            >
-              <span>{selectedDistrict || "시군구 선택"}</span>
-              <div className="arrow"></div>
-            </div>
-            <div className="custom-options">
-              {districtOptions.map((district) => (
-                <span
-                  key={district}
-                  className="custom-option"
-                  onClick={() => handleDistrictSelect(district)}
-                >
-                  {district}
-                </span>
-              ))}
-            </div>
-          </div>
-          <select
-            id="restroomDistrictSelect"
-            style={{ display: "none" }}
-            value={selectedDistrict}
-            onChange={(e) => handleDistrictSelect(e.target.value)}
-          >
-            <option value="">시군구 선택</option>
-            {districtOptions.map((district) => (
-              <option key={district} value={district}>
-                {district}
-              </option>
-            ))}
-          </select>
-        </div>
+        <DistrictSelector
+          selectedDistrict={selectedDistrict}
+          districtOptions={districtOptions}
+          isDistrictSelectOpen={isDistrictSelectOpen}
+          toggleDistrictSelect={toggleDistrictSelect}
+          handleDistrictSelect={handleDistrictSelect}
+        />
 
-        <div className="mg-10">
-          <input
-            type="text"
-            id="restroomSearchInput"
-            placeholder="화장실명을 입력하세요"
-            autoComplete="off"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <button id="restroomSearchButton" onClick={handleSearch}>
-            검색
-          </button>
-        </div>
+        <button id="restroomCityDistrictSearchButton" onClick={handleSearch}>
+          지역 검색
+        </button>
+
+        <SearchInput
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          handleInputSearch={handleInputSearch}
+        />
       </section>
 
       {showModal && (
-        <RestroomModal
-          restroom={selectedRestroom}
-          onClose={() => setShowModal(false)}
-        />
+        <RestroomModal restrooms={filteredRestrooms} onClose={closeModal} />
       )}
     </div>
   );

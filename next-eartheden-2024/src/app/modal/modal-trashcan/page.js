@@ -1,5 +1,23 @@
-const TrashcanModal = ({ trashcan, onClose }) => {
-  if (!trashcan) return null;
+import React, { useState } from "react";
+import MapTooltip from "../../components/MapTooltip.js";
+
+const TrashcanModal = ({ trashcans, onClose }) => {
+  const [mapPosition, setMapPosition] = useState({
+    latitude: null,
+    longitude: null,
+    show: false,
+  });
+
+  if (!trashcans || trashcans.length === 0) return null;
+
+  const handleMouseEnter = (latitude, longitude, event) => {
+    const { clientX, clientY } = event;
+    setMapPosition({ latitude, longitude, show: true, x: clientX, y: clientY });
+  };
+
+  const handleMouseLeave = () => {
+    setMapPosition({ latitude: null, longitude: null, show: false });
+  };
 
   const handleBackgroundClick = (event) => {
     if (event.target.className === "modal") {
@@ -29,20 +47,34 @@ const TrashcanModal = ({ trashcan, onClose }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    data-lat={trashcan.latitude}
-                    data-lng={trashcan.longitude}
-                  >
-                    <td>{trashcan.location}</td>
-                    <td>{trashcan.binType}</td>
-                  </tr>
+                  {trashcans.map((trashcan, index) => (
+                    <tr key={index}>
+                      <td
+                        onMouseEnter={(e) =>
+                          handleMouseEnter(trashcan.위도, trashcan.경도, e)
+                        }
+                        onMouseLeave={handleMouseLeave}
+                      >
+                        {trashcan.위치}
+                      </td>
+                      <td>{trashcan["쓰레기통 종류"] || "일반"}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
           </section>
         </div>
       </div>
+      {mapPosition.show && (
+        <MapTooltip
+          latitude={mapPosition.latitude}
+          longitude={mapPosition.longitude}
+          style={{ top: mapPosition.y, left: mapPosition.x }}
+        />
+      )}
     </div>
   );
 };
+
 export default TrashcanModal;

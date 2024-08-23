@@ -1,96 +1,147 @@
 "use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import TrashcanModal from "../../modal/modal-trashcan/page.js";
+import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import TrashcanModal from "../../modal/modal-trashcan/page.js"; // Modal import
+import { getDistrictsByCity } from "../../components/DistrictData.js";
+import TrashCanFiles from "../../components/TrashCanFiles.js"; // Data files import
+import CitySelector from "../../components/CitySelector.js";
+import DistrictSelector from "../../components/DistrictSelector.js";
+import SearchInput from "../../components/SearchInput.js";
 
-const options = [
-  "서울",
-  "부산",
-  "대구",
-  "인천",
-  "광주",
-  "대전",
-  "울산",
-  "세종",
-];
-
-const TrashcanSearchSection = () => {
+const TrashCanSearchSection = () => {
   const [showModal, setShowModal] = useState(false);
-  const [selectedTrashcan, setSelectedTrashcan] = useState(null);
+  const [selectedCity, setSelectedCity] = useState("");
+  const [districtOptions, setDistrictOptions] = useState([]);
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [trashCans, setTrashCans] = useState([]);
+  const [isCitySelectOpen, setIsCitySelectOpen] = useState(false);
+  const [isDistrictSelectOpen, setIsDistrictSelectOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredTrashCans, setFilteredTrashCans] = useState([]);
+
+  useEffect(() => {
+    fetchTrashCanData();
+  }, []);
+
+  const fetchTrashCanData = async () => {
+    try {
+      const promises = TrashCanFiles.map((file) =>
+        fetch(`/json/${file}`).then((res) => res.json())
+      );
+      const results = await Promise.all(promises);
+      const mergedData = results.flat();
+      setTrashCans(mergedData);
+    } catch (error) {
+      console.error("JSON 데이터를 불러오는데 실패하였습니다.", error);
+    }
+  };
+
+  const handleCitySelect = (city) => {
+    setSelectedCity(city);
+    const districts = getDistrictsByCity(city);
+    setDistrictOptions(districts);
+    setSelectedDistrict("");
+    setIsCitySelectOpen(false);
+  };
+
+  const handleDistrictSelect = (district) => {
+    setSelectedDistrict(district);
+    setIsDistrictSelectOpen(false);
+  };
 
   const handleSearch = () => {
-    const trashcanData = {
-      location: "서울역",
-      binType: "일반쓰레기통",
-    };
-    setSelectedTrashcan(trashcanData);
-    setShowModal(true);
+    const filtered = trashCans.filter((trashCan) => {
+      const region = trashCan.region || "";
+      const [city, district] = region ? region.split(" ") : ["", ""];
+      const location = trashCan.위치 || "";
+
+      const cityMatch = selectedCity && city.includes(selectedCity);
+      const districtMatch =
+        selectedDistrict && district.includes(selectedDistrict);
+
+      return cityMatch && districtMatch;
+    });
+
+    if (filtered.length > 0) {
+      setFilteredTrashCans(filtered);
+      setShowModal(true);
+    } else {
+      alert("해당 지역에 쓰레기통이 없습니다.");
+    }
+  };
+
+  const handleInputSearch = () => {
+    const filtered = trashCans.filter((trashCan) => {
+      const location = trashCan.위치 || "";
+      const region = trashCan.region || "";
+
+      return location.includes(searchQuery) || region.includes(searchQuery);
+    });
+
+    if (filtered.length > 0) {
+      setFilteredTrashCans(filtered);
+      setShowModal(true);
+    } else {
+      alert("검색 결과가 없습니다.");
+    }
+  };
+
+  const toggleCitySelect = () => {
+    setIsCitySelectOpen(!isCitySelectOpen);
+    setIsDistrictSelectOpen(false);
+  };
+
+  const toggleDistrictSelect = () => {
+    setIsDistrictSelectOpen(!isDistrictSelectOpen);
+    setIsCitySelectOpen(false);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
   };
 
   return (
     <div className="background trash-can">
-      <div className="overlay"></div>
+      <div className="overlay" onClick={closeModal}></div>
       <section className="search trash-can">
         <h2>
-          <FontAwesomeIcon icon={faTrashAlt} className="default-icon" /> Trash
+          <FontAwesomeIcon icon={faTrashCan} className="default-icon" /> Trash
           Can
         </h2>
         <h6>공공쓰레기통 검색</h6>
 
-        <div className="custom-select-wrapper">
-          <div className="custom-select">
-            <div className="custom-select-trigger">
-              <span>도시 선택</span>
-              <div className="arrow"></div>
-            </div>
-            <div className="custom-options">
-              {options.map((option) => (
-                <span
-                  key={option}
-                  className="custom-option"
-                  data-value={option}
-                >
-                  {option}
-                </span>
-              ))}
-            </div>
-          </div>
-          <select id="trashcanCitySelect" style={{ display: "none" }}>
-            <option value="">도시 선택</option>
-            {options.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </div>
+        <CitySelector
+          selectedCity={selectedCity}
+          isCitySelectOpen={isCitySelectOpen}
+          toggleCitySelect={toggleCitySelect}
+          handleCitySelect={handleCitySelect}
+        />
+
+        <DistrictSelector
+          selectedDistrict={selectedDistrict}
+          districtOptions={districtOptions}
+          isDistrictSelectOpen={isDistrictSelectOpen}
+          toggleDistrictSelect={toggleDistrictSelect}
+          handleDistrictSelect={handleDistrictSelect}
+        />
 
         <button id="trashcanCityDistrictSearchButton" onClick={handleSearch}>
           지역 검색
         </button>
-        <div className="mg-10">
-          <input
-            type="text"
-            id="trashcanSearchInput"
-            placeholder="위치를 검색하세요"
-            autoComplete="off"
-          />
-          <button id="trashcanSearchButton" onClick={handleSearch}>
-            검색
-          </button>
-        </div>
+
+        <SearchInput
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          handleInputSearch={handleInputSearch}
+        />
       </section>
 
       {showModal && (
-        <TrashcanModal
-          trashcan={selectedTrashcan}
-          onClose={() => setShowModal(false)}
-        />
+        <TrashcanModal trashcans={filteredTrashCans} onClose={closeModal} />
       )}
     </div>
   );
 };
 
-export default TrashcanSearchSection;
+export default TrashCanSearchSection;

@@ -1,121 +1,109 @@
-import React, { useState, useEffect } from "react";
+// components/RestroomModal.js
+import React, { useState } from "react";
+import MapTooltip from "../../components/MapTooltip";
 
-const RestroomModal = ({ onClose }) => {
-  const [data, setData] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredResults, setFilteredResults] = useState([]);
+const RestroomModal = ({ restrooms, onClose }) => {
+  const [tooltip, setTooltip] = useState({
+    visible: false,
+    coordinates: null,
+    position: { x: 0, y: 0 },
+  });
 
-  // JSON 데이터 요청
-  const fetchAllData = async () => {
-    try {
-      const files = [
-        "공중화장실정보강원.json",
-        "공중화장실정보경기.json",
-        "공중화장실정보경남.json",
-        "공중화장실정보경북.json",
-        "공중화장실정보광주.json",
-        "공중화장실정보대구.json",
-        "공중화장실정보대전.json",
-        "공중화장실정보부산.json",
-        "공중화장실정보서울.json",
-        "공중화장실정보세종.json",
-        "공중화장실정보울산.json",
-        "공중화장실정보인천.json",
-        "공중화장실정보전남.json",
-        "공중화장실정보전북.json",
-        "공중화장실정보제주.json",
-        "공중화장실정보충남.json",
-        "공중화장실정보충북.json",
-      ];
+  if (!restrooms || restrooms.length === 0) return null;
 
-      const promises = files.map((file) =>
-        fetch(`/json/${file}`).then((res) => res.json())
-      );
-      const results = await Promise.all(promises);
-      const mergedData = results.flat();
-      setData(mergedData);
-    } catch (error) {
-      console.error("JSON 데이터를 불러오는데 실패하였습니다.", error);
+  const handleBackgroundClick = (event) => {
+    if (event.target.className === "modal") {
+      onClose();
     }
   };
 
-  useEffect(() => {
-    if (!data) {
-      fetchAllData();
-    }
-  }, [data]);
-
-  // 검색어에 따라 데이터를 필터링
-  useEffect(() => {
-    if (searchQuery) {
-      const results = data.filter(
-        (item) =>
-          item.화장실명.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.소재지지번주소
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          (item.소재지도로명주소 &&
-            item.소재지도로명주소
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()))
-      );
-      setFilteredResults(results);
-    } else {
-      setFilteredResults([]);
-    }
-  }, [searchQuery, data]);
-
-  const handleSearch = (event) => {
-    setSearchQuery(event.target.value);
+  const handleMouseEnter = (event, coordinates) => {
+    const { clientX: x, clientY: y } = event;
+    setTooltip({
+      visible: true,
+      coordinates,
+      position: { x: x + 10, y: y + 10 }, // Offset to prevent overlap
+    });
   };
 
-  if (!data) return <div>Loading...</div>;
+  const handleMouseMove = (event) => {
+    if (tooltip.visible) {
+      const { clientX: x, clientY: y } = event;
+      setTooltip((prevTooltip) => ({
+        ...prevTooltip,
+        position: { x: x + 10, y: y + 10 }, // Update position on mouse move
+      }));
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setTooltip({
+      ...tooltip,
+      visible: false,
+    });
+  };
 
   return (
-    <div className="modal" style={{ display: "block" }}>
+    <div
+      id="restroomModal"
+      className="modal"
+      style={{ display: "block" }}
+      onClick={handleBackgroundClick}
+      onMouseMove={handleMouseMove} // Track mouse movements
+    >
       <div className="modal-content">
         <span className="close" onClick={onClose}>
           &times;
         </span>
-        <input
-          type="text"
-          placeholder="Search by restroom name or address"
-          value={searchQuery}
-          onChange={handleSearch}
-        />
-        <div className="table-container">
-          <table className="list">
-            <thead>
-              <tr>
-                <th>화장실명</th>
-                <th>지번 주소</th>
-                <th>도로명 주소</th>
-                <th>관리기관명</th>
-                <th>전화번호</th>
-                <th>개방시간</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredResults.length > 0 ? (
-                filteredResults.map((item, index) => (
-                  <tr key={index}>
-                    <td>{item.화장실명}</td>
-                    <td>{item.소재지지번주소}</td>
-                    <td>{item.소재지도로명주소 || "없음"}</td>
-                    <td>{item.관리기관명}</td>
-                    <td>{item.전화번호}</td>
-                    <td>{item.개방시간상세 || "정보 없음"}</td>
+        <div id="restroomModalResultSection">
+          <section className="main">
+            <div className="table-container">
+              <table className="list">
+                <thead>
+                  <tr>
+                    <th>화장실명</th>
+                    <th>도로명 주소</th>
+                    <th>지번 주소</th>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6">No results found</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {restrooms.map((restroom, index) => {
+                    const latitude =
+                      restroom.WGS84위도 !== "null"
+                        ? parseFloat(restroom.WGS84위도)
+                        : null;
+                    const longitude =
+                      restroom.WGS84경도 !== "null"
+                        ? parseFloat(restroom.WGS84경도)
+                        : null;
+
+                    return (
+                      <tr
+                        key={index}
+                        onMouseEnter={(e) =>
+                          handleMouseEnter(e, { lat: latitude, lng: longitude })
+                        }
+                        onMouseLeave={handleMouseLeave}
+                      >
+                        <td>{restroom.화장실명}</td>
+                        <td>{restroom.소재지도로명주소 || ""}</td>
+                        <td>{restroom.소재지지번주소 || ""}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </section>
         </div>
       </div>
+      {tooltip.visible && tooltip.coordinates && (
+        <MapTooltip
+          position={tooltip.position}
+          coordinates={tooltip.coordinates}
+          isVisible={tooltip.visible}
+        />
+      )}
     </div>
   );
 };

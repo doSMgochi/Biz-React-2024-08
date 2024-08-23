@@ -13,7 +13,11 @@ const Home = () => {
         <TrashCanSearchSection districts={districts} />
         <WifiSearchSection districts={districts} />
       </div>
-      <FontAwesomeIcon icon={faCaretDown} id="scrollIcon" />
+      <FontAwesomeIcon
+        icon={faCaretDown}
+        id="scrollIcon"
+        style={{ width: "30px" }}
+      />
     </>
   );
 };
