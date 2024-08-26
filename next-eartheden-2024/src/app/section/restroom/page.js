@@ -20,6 +20,7 @@ const RestroomSearchSection = () => {
   const [isDistrictSelectOpen, setIsDistrictSelectOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredRestrooms, setFilteredRestrooms] = useState([]);
+  const [searchType, setSearchType] = useState("");
 
   useEffect(() => {
     fetchRestroomData();
@@ -34,7 +35,7 @@ const RestroomSearchSection = () => {
       const mergedData = results.flat();
       setRestrooms(mergedData);
     } catch (error) {
-      console.error("JSON 데이터를 불러오는데 실패하였습니다.", error);
+      console.error("JSON 데이터 불러오기 실패", error);
     }
   };
 
@@ -52,6 +53,17 @@ const RestroomSearchSection = () => {
   };
 
   const handleSearch = () => {
+    if (!selectedCity) {
+      alert("특별시/광역시/도를 선택하세요.");
+      return;
+    }
+
+    if (!selectedDistrict) {
+      alert("시/군/구를 선택하세요.");
+      return;
+    }
+
+    setSearchType("location");
     const filtered = restrooms.filter((restroom) => {
       const roadAddress = restroom.소재지도로명주소 || "";
       const parcelAddress = restroom.소재지지번주소 || "";
@@ -85,6 +97,12 @@ const RestroomSearchSection = () => {
   };
 
   const handleInputSearch = () => {
+    if (!searchQuery.trim()) {
+      alert("검색어를 입력하세요.");
+      return;
+    }
+
+    setSearchType("query");
     const filtered = restrooms.filter((restroom) => {
       const roadAddress = restroom.소재지도로명주소 || "";
       const parcelAddress = restroom.소재지지번주소 || "";
@@ -156,7 +174,12 @@ const RestroomSearchSection = () => {
       </section>
 
       {showModal && (
-        <RestroomModal restrooms={filteredRestrooms} onClose={closeModal} />
+        <RestroomModal
+          restrooms={filteredRestrooms}
+          onClose={closeModal}
+          searchType={searchType}
+          searchQuery={searchQuery}
+        />
       )}
     </div>
   );

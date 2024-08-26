@@ -1,8 +1,7 @@
-// components/RestroomModal.js
 import React, { useState } from "react";
 import MapTooltip from "../../components/MapTooltip";
 
-const RestroomModal = ({ restrooms, onClose }) => {
+const RestroomModal = ({ restrooms, onClose, searchType, searchQuery }) => {
   const [tooltip, setTooltip] = useState({
     visible: false,
     coordinates: null,
@@ -11,28 +10,29 @@ const RestroomModal = ({ restrooms, onClose }) => {
 
   if (!restrooms || restrooms.length === 0) return null;
 
-  const handleBackgroundClick = (event) => {
-    if (event.target.className === "modal") {
-      onClose();
-    }
+  // 헤더 지역 정보
+  const getHeaderRegion = () => {
+    const firstRestroom = restrooms[0];
+    const address =
+      firstRestroom.소재지도로명주소 || firstRestroom.소재지지번주소 || "";
+    const addressParts = address.split(" ");
+    return `${addressParts[0] || "정보 없음"} ${addressParts[1] || ""}`;
   };
 
-  const handleMouseEnter = (event, coordinates) => {
-    const { clientX: x, clientY: y } = event;
-    setTooltip({
-      visible: true,
-      coordinates,
-      position: { x: x + 10, y: y + 10 }, // Offset to prevent overlap
-    });
-  };
+  // 헤더 텍스트 결정
+  const headerText =
+    searchType === "query"
+      ? `${searchQuery} 검색 결과`
+      : `${getHeaderRegion()} 화장실 정보`;
 
-  const handleMouseMove = (event) => {
-    if (tooltip.visible) {
+  const handleMouseEnter = (latitude, longitude, event) => {
+    if (latitude && longitude && !isNaN(latitude) && !isNaN(longitude)) {
       const { clientX: x, clientY: y } = event;
-      setTooltip((prevTooltip) => ({
-        ...prevTooltip,
-        position: { x: x + 10, y: y + 10 }, // Update position on mouse move
-      }));
+      setTooltip({
+        visible: true,
+        coordinates: { lat: latitude, lng: longitude },
+        position: { x: x + 10, y: y + 10 },
+      });
     }
   };
 
@@ -43,18 +43,33 @@ const RestroomModal = ({ restrooms, onClose }) => {
     });
   };
 
+  const handleBackgroundClick = (event) => {
+    if (event.target.className === "modal") {
+      onClose();
+    }
+  };
+
+  const handleRowClick = (coordinates) => {
+    if (coordinates.lat && coordinates.lng) {
+      const kakaoMapUrl = `https://map.kakao.com/link/map/${coordinates.lat},${coordinates.lng}`;
+      window.open(kakaoMapUrl, "_blank");
+    }
+  };
+
   return (
     <div
       id="restroomModal"
       className="modal"
       style={{ display: "block" }}
       onClick={handleBackgroundClick}
-      onMouseMove={handleMouseMove} // Track mouse movements
     >
       <div className="modal-content">
         <span className="close" onClick={onClose}>
           &times;
         </span>
+        <div className="modal-header">
+          <h2>{headerText}</h2>
+        </div>
         <div id="restroomModalResultSection">
           <section className="main">
             <div className="table-container">
@@ -81,9 +96,15 @@ const RestroomModal = ({ restrooms, onClose }) => {
                       <tr
                         key={index}
                         onMouseEnter={(e) =>
-                          handleMouseEnter(e, { lat: latitude, lng: longitude })
+                          handleMouseEnter(latitude, longitude, e)
                         }
                         onMouseLeave={handleMouseLeave}
+                        onClick={() =>
+                          handleRowClick({ lat: latitude, lng: longitude })
+                        }
+                        style={{
+                          cursor: latitude && longitude ? "pointer" : "default",
+                        }}
                       >
                         <td>{restroom.화장실명}</td>
                         <td>{restroom.소재지도로명주소 || ""}</td>

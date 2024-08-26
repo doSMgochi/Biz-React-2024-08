@@ -20,6 +20,7 @@ const WifiSearchSection = () => {
   const [isDistrictSelectOpen, setIsDistrictSelectOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredWifis, setFilteredWifis] = useState([]);
+  const [searchType, setSearchType] = useState("");
 
   useEffect(() => {
     fetchWifiData();
@@ -52,6 +53,17 @@ const WifiSearchSection = () => {
   };
 
   const handleSearch = () => {
+    if (!selectedCity) {
+      alert("특별시/광역시/도를 선택하세요.");
+      return;
+    }
+
+    if (!selectedDistrict) {
+      alert("시/군/구를 선택하세요.");
+      return;
+    }
+
+    setSearchType("location");
     const filtered = wifis.filter((wifi) => {
       const roadAddress = wifi.소재지도로명주소 || "";
       const parcelAddress = wifi.소재지지번주소 || "";
@@ -80,6 +92,12 @@ const WifiSearchSection = () => {
   };
 
   const handleInputSearch = () => {
+    if (!searchQuery.trim()) {
+      alert("검색어를 입력하세요.");
+      return;
+    }
+
+    setSearchType("query");
     const filtered = wifis.filter((wifi) => {
       const location = wifi.설치장소명 || "";
       const roadAddress = wifi.소재지도로명주소 || "";
@@ -151,7 +169,14 @@ const WifiSearchSection = () => {
         />
       </section>
 
-      {showModal && <WifiModal wifis={filteredWifis} onClose={closeModal} />}
+      {showModal && (
+        <WifiModal
+          wifis={filteredWifis}
+          onClose={closeModal}
+          searchType={searchType}
+          searchQuery={searchQuery}
+        />
+      )}
     </div>
   );
 };

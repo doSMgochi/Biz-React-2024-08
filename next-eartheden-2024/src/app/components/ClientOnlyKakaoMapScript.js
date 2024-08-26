@@ -1,7 +1,6 @@
-// src/app/components/ClientOnlyKakaoMapScript.js
 "use client";
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 
 const ClientOnlyKakaoMapScript = () => {
   useEffect(() => {

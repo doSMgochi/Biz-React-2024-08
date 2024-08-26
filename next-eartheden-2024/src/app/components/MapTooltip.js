@@ -1,5 +1,4 @@
-// components/MapTooltip.js
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const MapTooltip = ({ position, coordinates, isVisible }) => {
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -8,11 +7,10 @@ const MapTooltip = ({ position, coordinates, isVisible }) => {
   useEffect(() => {
     const apiKey = process.env.NEXT_PUBLIC_KAKAO_API_KEY;
     if (!apiKey) {
-      console.error("Kakao API key is not defined.");
+      console.error("카카오 API 오류");
       return;
     }
 
-    // 이전에 로드된 스크립트 제거
     const existingScript = document.querySelector(
       `script[src*="dapi.kakao.com"]`
     );
@@ -26,13 +24,12 @@ const MapTooltip = ({ position, coordinates, isVisible }) => {
       window.kakao.maps.load(() => {
         const mapContainer = document.getElementById("map");
         if (!mapContainer) {
-          console.error("Map container element not found.");
+          console.error("맵 요소 없음");
           return;
         }
 
-        // 기존 지도와 마커 제거를 위한 클린업 로직
+        // 기존 지도와 마커 제거
         if (mapInstance) {
-          // 지도의 콘텐츠를 직접 제거하거나 초기화
           const mapContainerChildren = mapContainer.children;
           while (mapContainerChildren.length > 0) {
             mapContainer.removeChild(mapContainerChildren[0]);
@@ -61,7 +58,7 @@ const MapTooltip = ({ position, coordinates, isVisible }) => {
       });
     };
     script.onerror = () => {
-      console.error("Failed to load Kakao Maps API script.");
+      console.error("카카오 API 로드 실패");
     };
     document.head.appendChild(script);
 
@@ -75,16 +72,16 @@ const MapTooltip = ({ position, coordinates, isVisible }) => {
         }
       }
     };
-  }, [coordinates]); // coordinates가 변경될 때마다 useEffect 실행
+  }, [coordinates]);
 
-  if (!isVisible) return null;
+  if (!isVisible || !coordinates) return null;
 
   return (
     <div
       id="map"
       style={{
-        width: "400px",
-        height: "400px",
+        width: "250px",
+        height: "250px",
         position: "absolute",
         top: position.y,
         left: position.x,

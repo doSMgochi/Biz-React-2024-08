@@ -94,6 +94,10 @@ div.snap-container {
   }
 }
 
+div.modal-header {
+  text-align: center;
+}
+
 div.snap-container::-webkit-scrollbar {
   display: none;
 }
@@ -191,6 +195,7 @@ div.modal {
 div.modal-content {
   max-height: 80vh;
   overflow-y: auto;
+  border-radius: 15px;
   scrollbar-width: none;
   background-color: #fefefe;
   padding: 20px;
@@ -360,16 +365,16 @@ span.close:focus {
 @media (max-width: 480px) {
   section.search.restroom {
     left: 50vw;
-    top: 35vh;
+    top: 45vh;
   }
 
   section.search.trash-can {
     left: 50vw;
-    top: 25vh;
+    top: 45vh;
   }
 
   section.search.wifi {
     left: 50vw;
-    top: 30vh;
+    top: 45vh;
   }
 }
