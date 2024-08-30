@@ -347,18 +347,18 @@ span.close:focus {
 
 @media (max-width: 768px) {
   section.search.restroom {
-    left: 55vw;
-    top: 40vh;
+    left: 50vw;
+    top: 45vh;
   }
 
   section.search.trash-can {
-    left: 35vw;
-    top: 30vh;
+    left: 50vw;
+    top: 45vh;
   }
 
   section.search.wifi {
     left: 50vw;
-    top: 35vh;
+    top: 45vh;
   }
 }
 

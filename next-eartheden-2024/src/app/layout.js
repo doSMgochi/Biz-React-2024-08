@@ -1,4 +1,3 @@
-// `RootLayout.js` 파일 예시
 import React from "react";
 import "./globals.css";
 import "./main.css";
@@ -21,6 +20,7 @@ const RootLayout = ({ children }) => {
           href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum&display=swap"
           rel="stylesheet"
         />
+        <link rel="icon" href="/favicon.svg" />
         <script
           type="text/javascript"
           src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.REACT_APP_KAKAO_API_KEY}&autoload=false`}
