@@ -1,6 +1,10 @@
 {
   "/page": "app/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/user/login/page": "app/user/login/page.js",
-  "/user/join/page": "app/user/join/page.js"
+  "/quiz/question/page": "app/quiz/question/page.js",
+  "/quiz/ranking/page": "app/quiz/ranking/page.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/api/quiz/route": "app/api/quiz/route.js",
+  "/api/stock/route": "app/api/stock/route.js",
+  "/stocks/list/page": "app/stocks/list/page.js",
+  "/user/mystocks/page": "app/user/mystocks/page.js"
 }

@@ -1,29 +1,226 @@
 /*!**********************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[3]!./public/css/user.module.css ***!
   \**********************************************************************************************************************************************************************************************************************************************************************/
+div.user_user_background__Z0iX3 {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-image: url(/_next/static/media/5578.13420717.jpg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 section.user_login_box__erLwA,
-section.user_join_box__b4l71 {
+section.user_join_box__b4l71,
+section.user_mypage_box__JJf8L,
+section.user_mystocks_box__IWMvo {
+  width: 500px;
+  position: absolute;
   display: flex;
   flex-direction: column;
   align-items: center;
+  color: white;
   gap: 8px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 25px 5px white;
+  border: none;
+  border-radius: 15px;
+  padding: 50px 80px;
+
+  h1.user_fs_5x___lVq1 {
+    font-family: "Black Han Sans", sans-serif;
+    font-weight: 300;
+    font-size: 5rem;
+    color: white;
+    animation: user_fadeInLeftSoftBounce__Z5dxB 1.5s ease-out;
+    text-align: center;
+  }
+  h1.user_fs_1x___EWZq {
+    font-family: "Playwrite CU", sans-serif;
+    font-size: 1rem;
+    color: white;
+    animation: user_fadeInLeftSoftBounce__Z5dxB 1.5s ease-out;
+    margin-top: -20px;
+    margin-bottom: 10px;
+  }
 
   input.user_user_input__ovzQo,
   button.user_user_button__P3Mrl {
-    width: 300px;
-    padding: 8px 12px;
+    font-family: "Noto Serif KR", sans-serif;
+    width: 200px;
+    padding: 12px 15px;
     outline: none;
     border: 1px solid #ddd;
     border-radius: 8px;
+    animation: user_fadeInRightSoftBounce__pRC5W 1.5s ease-out;
+    &::placeholder {
+      text-align: center;
+    }
   }
 
   button.user_user_button__P3Mrl {
-    background-color: #999;
+    box-shadow: 0 0 2px 2px white;
+    background: none;
     color: white;
     &:hover {
-      background-color: #777;
+      background-color: white;
       cursor: pointer;
+      color: black;
+      transition: 0.7s;
     }
+  }
+
+  ul.user_do__ssRmc {
+    font-family: "Noto Serif KR", sans-serif;
+    font-size: 1.2rem;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+
+    animation: user_fadeInRightSoftBounce__pRC5W 1.5s ease-out;
+
+    li.user_li__pOLWz {
+      margin: 15px 0;
+      display: flex;
+    }
+  }
+
+  button.user_favorite__BMGJC {
+    cursor: pointer;
+    display: block;
+    width: 120px;
+    height: 30px;
+    background: linear-gradient(70deg, rgb(223, 206, 224), rgb(194, 241, 255));
+    background-size: 200%;
+    background-position: 0% 50%;
+    box-shadow: 0 0 5px 4px white;
+    font-family: "Do Hyeon", sans-serif;
+    border: none;
+    border-radius: 8px;
+    outline: none;
+    font-size: 1.1rem;
+    text-shadow: 0 0 5px rgb(84, 84, 95);
+    color: white;
+    margin-left: auto;
+    margin-right: 5px;
+    position: relative;
+    transition: background-position 0.5s ease;
+  }
+
+  button.user_favorite__BMGJC:hover {
+    background-position: 60% 50%;
+  }
+
+  div.user_radio_container__udOIW {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    animation: user_fadeInRightSoftBounce__pRC5W 1.5s ease-out;
+
+    input.user_radio_input__Ni2lD {
+      -webkit-appearance: none;
+         -moz-appearance: none;
+              appearance: none;
+      width: 100px;
+      height: 40px;
+      border: 2px solid #ddd;
+      box-shadow: 0 0 1px 1px white;
+      background: none;
+      font-family: "Noto Serif KR", sans-serif;
+      text-align: center;
+      cursor: pointer;
+      outline: none;
+      display: inline-block;
+      position: relative;
+      z-index: 1;
+    }
+
+    input.user_radio_input__Ni2lD:nth-of-type(1):checked {
+      background-color: skyblue;
+      opacity: 0.7;
+      transition: 0.7s;
+    }
+    input.user_radio_input__Ni2lD:nth-of-type(2):checked {
+      background-color: pink;
+      opacity: 0.7;
+      transition: 0.7s;
+    }
+
+    input.user_radio_input__Ni2lD:first-of-type {
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+    }
+
+    input.user_radio_input__Ni2lD:last-of-type {
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+
+    label.user_radio_label__wSMN_ {
+      position: absolute;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100px;
+      height: 40px;
+      top: 0;
+      left: 0;
+      font-family: "Noto Serif KR", sans-serif;
+      color: white;
+      cursor: pointer;
+      text-align: center;
+      pointer-events: none;
+      z-index: 2;
+    }
+  }
+  .user_radio_container__udOIW input:nth-of-type(2) ~ label.user_radio_label__wSMN_ {
+    left: 100px;
+  }
+}
+
+@keyframes user_fadeInLeftSoftBounce__Z5dxB {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(0%);
+  }
+  75% {
+    transform: translateX(3%);
+  }
+  90% {
+    transform: translateX(-3%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+@keyframes user_fadeInRightSoftBounce__pRC5W {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(0%);
+  }
+  75% {
+    transform: translateX(-3%);
+  }
+  90% {
+    transform: translateX(3%);
+  }
+  100% {
+    transform: translateX(0%);
   }
 }
 

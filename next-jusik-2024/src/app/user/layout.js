@@ -1,9 +1,6 @@
+import user from "../../../public/css/user.module.css";
+
 const UserLayout = ({ children }) => {
-  return (
-    <section>
-      <h1>여기는 유저관련 페이지들</h1>
-      {children}
-    </section>
-  );
+  return <div className={user.user_background}>{children}</div>;
 };
 export default UserLayout;

@@ -91,3 +91,8 @@ package-lock.json
 
 # ETC
 .bak
+
+# SEC
+
+kis_secret.js
+.next/

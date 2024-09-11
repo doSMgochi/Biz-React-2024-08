@@ -21,7 +21,49 @@
     "/user/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
+      "static/css/app/user/layout.css",
       "static/chunks/app/user/layout.js"
+    ],
+    "/user/mypage/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/user/mypage/page.css",
+      "static/chunks/app/user/mypage/page.js"
+    ],
+    "/user/mystocks/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/user/mystocks/page.css",
+      "static/chunks/app/user/mystocks/page.js"
+    ],
+    "/user/modify/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/user/modify/page.css",
+      "static/chunks/app/user/modify/page.js"
+    ],
+    "/stocks/list/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/stocks/list/page.js"
+    ],
+    "/stocks/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/stocks/layout.css",
+      "static/chunks/app/stocks/layout.js"
+    ],
+    "/quiz/question/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/quiz/question/page.css",
+      "static/chunks/app/quiz/question/page.js"
+    ],
+    "/quiz/ranking/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/quiz/ranking/page.css",
+      "static/chunks/app/quiz/ranking/page.js"
     ],
     "/user/join/page": [
       "static/chunks/webpack.js",

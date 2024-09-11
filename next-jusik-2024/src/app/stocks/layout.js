@@ -1,9 +1,5 @@
-const StrocksLayout = ({ children }) => {
-  return (
-    <section>
-      <h1>여기는 주식관련 페이지들</h1>
-      {children}
-    </section>
-  );
+import "../../../public/css/stocks.css";
+const StocksLayout = ({ children }) => {
+  return <section className="stock main">{children}</section>;
 };
-export default StrocksLayout;
+export default StocksLayout;
